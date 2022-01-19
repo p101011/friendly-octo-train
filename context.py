@@ -59,7 +59,7 @@ async def init(ooc_channel):
     last_message_id = data.get("last_message_id", None)
     new_data = await get_new_messages(ooc_channel, last_updated, last_message_id)
     data["total_count"] += new_data["count"]
-    print(f"Data fetch complete: there are {new_data['count']} new messages and {data['total_count']} total new messages")
+    print(f"Data fetch complete: there are {new_data['count']} new messages and {data['total_count']} total messages")
     for author in new_data["quotes"].keys():
         if author not in data["quotes"]:
             data["quotes"][author] = []

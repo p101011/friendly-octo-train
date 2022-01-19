@@ -96,7 +96,7 @@ async def select_quote(context, *args):
 
 @bot.command(name='guess', help="Who wrote the quote")
 async def user_guess_quote(context, *args):
-    result = ooc.check_quote_author(args)
+    result = ooc.check_quote_author(args[0])
     if result == -1:
         message = f"No quote to guess for - use '!{prefix} quote' to generate one"
     elif result == 0:
