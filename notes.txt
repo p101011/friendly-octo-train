@@ -1,0 +1,1 @@
+https://stackoverflow.com/questions/55841087/python-spacy-and-memory-consumption

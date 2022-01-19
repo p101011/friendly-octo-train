@@ -1,0 +1,4 @@
+python -m pip install "numpy>=1.2.0" --force-reinstall
+python -m pip install discord
+python -m pip install spacy
+python -m pip install nltk
