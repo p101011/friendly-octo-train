@@ -81,8 +81,7 @@ async def get_new_messages(channel, timestamp, last_message_id):
         last_message = None
     else:
         last_message = await channel.fetch_message(last_message_id)
-    # messages = await channel.history(limit=None, after=last_message).flatten()
-    messages = []
+    messages = await channel.history(limit=None, after=last_message).flatten()
     for message in messages:
         message_time = message.created_at
         if message_time < timestamp or invalid_message(message):

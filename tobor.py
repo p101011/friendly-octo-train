@@ -98,7 +98,7 @@ async def select_quote(context, *args):
 async def user_guess_quote(context, *args):
     result = ooc.check_quote_author(args)
     if result == -1:
-        message = f"No quote to guess for - use '!{prefix} guess' to generate one"
+        message = f"No quote to guess for - use '!{prefix} quote' to generate one"
     elif result == 0:
         message = f"Incorrect"
     elif result == 1:
