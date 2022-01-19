@@ -11,6 +11,8 @@ filtered_data = {}
 
 def init():
     global interview_history, filtered_data
+    if not os.path.exists(interview_data_dir):
+        os.mkdir(interview_data_dir)
     for file in os.listdir(interview_data_dir):
         if os.path.isdir(file):
             continue
