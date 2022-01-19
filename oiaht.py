@@ -5,9 +5,9 @@ import util
 import os
 import csv
 
-metapath = "D:\\Repos\\p101011\\context-bot\\oiab-data.pkl"
-consequence_path = "D:\\Repos\\p101011\\context-bot\\oiaht-consequences.csv"
-consequence_data = "D:\\Repos\\p101011\\context-bot\\oiaht-consequences.pkl"
+metapath = "oiab-data.pkl"
+consequence_path = "oiaht-consequences.csv"
+consequence_data = "oiaht-consequences.pkl"
 
 one_in_a = 100000
 

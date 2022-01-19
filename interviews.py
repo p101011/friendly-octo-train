@@ -2,8 +2,8 @@ import os
 import random
 import util
 
-interview_data_dir = "D:\\Repos\\p101011\\context-bot\\InterviewData"
-interview_history_path = "D:\\Repos\\p101011\\context-bot\\history.pkl"
+interview_data_dir = "InterviewData"
+interview_history_path = "history.pkl"
 
 interview_data = {}
 interview_history = []

@@ -6,9 +6,9 @@ import grammar_parse
 from story_constants import *
 from story_element import History
 
-babel_library = "D:\\Repos\\p101011\\context-bot\\story-data.txt"
+babel_library = "story-data.txt"
 MARKOV_LENGTH = 3
-babel_store = f"D:\\Repos\\p101011\\context-bot\\tobor-dict-{MARKOV_LENGTH}.pkl"
+babel_store = f"tobor-dict-{MARKOV_LENGTH}.pkl"
 
 word_bank = {}
 length_sentence_map = {

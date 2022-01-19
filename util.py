@@ -2,7 +2,7 @@ import os
 import pickle
 import csv
 
-TOKEN_FILE_PATH = "D:\\Repos\\p101011\\context-bot\\token.txt"
+TOKEN_FILE_PATH = "token.txt"
 
 def get_discord_token():
     if os.path.exists(TOKEN_FILE_PATH):

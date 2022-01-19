@@ -4,8 +4,8 @@ import os
 import util
 import datetime
 
-datapath = "D:\\Repos\\p101011\\context-bot\\context-data.pkl"
-csvpath = "D:\\Repos\\p101011\\context-bot\\context-data.csv"
+datapath = "context-data.pkl"
+csvpath = "context-data.csv"
 
 data = {
     "timestamp": None,
