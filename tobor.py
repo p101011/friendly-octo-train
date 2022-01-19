@@ -2,7 +2,7 @@
 import util
 import oiaht
 import interviews
-import context
+import context as ooc
 import struct
 
 from discord.ext import commands
@@ -42,7 +42,7 @@ async def on_ready():
     for guild in bot.guilds:
         print(f'{bot.user} lives in {guild}')
     channel = bot.get_channel(rgg_ooc_channel_id)
-    await context.init(channel)
+    await ooc.init(channel)
     oiaht.init(record_oiaht_result)
     interviews.init()
     if X64:
@@ -53,7 +53,7 @@ async def on_message(message):
     global last_messaged_user
     last_messaged_user = message.author
     if message.author != bot.user and message.channel == "outofcontext":
-        context.add_message_to_log(message)
+        ooc.add_message_to_log(message)
     await bot.process_commands(message)
 
 # the main event
@@ -88,15 +88,15 @@ async def tell_story(context, *args):
 
 @bot.command(name='metrics', help="Gross")
 async def print_metrics(context, *args):
-    await context.send("I'm still sleeping")
+    await context.send("I'm still sleeping (wait for it)")
 
 @bot.command(name='quote', help="Provides a random quote")
 async def select_quote(context, *args):
-    await context.send(context.select_random_quote())
+    await context.send(ooc.select_random_quote())
 
 @bot.command(name='guess', help="Who wrote the quote")
 async def user_guess_quote(context, *args):
-    result = context.check_quote_author(args)
+    result = ooc.check_quote_author(args)
     if result == -1:
         message = f"No quote to guess for - use '!{prefix} guess' to generate one"
     elif result == 0:
@@ -106,13 +106,13 @@ async def user_guess_quote(context, *args):
     await context.send(message)
 
 @bot.command(name='answer', help="Who actually wrote it")
-async def user_guess_quote(context, *args):
-    author = context.get_quote_author()
+async def get_quote_author(context, *args):
+    author = ooc.get_quote_author()
     if author is None:
         await context.send("There's no quote to answer for!")
         return
     await context.send(f"The last message was said by {author}")
-    context.flush_random_quote()
+    ooc.flush_random_quote()
 
 @bot.command(name='interview', help="This will select a random job position for which someone has to interview")
 async def select_interview_position(context, *args):

@@ -49,7 +49,7 @@ def invalid_message(message):
 async def init(ooc_channel):
     print("Looking for pre-existing datapack")
     global data
-    if (os.path.exists(datapath) and False):
+    if (os.path.exists(datapath)):
         print("Datapack found")
         data = util.read_data(datapath)
     else:
