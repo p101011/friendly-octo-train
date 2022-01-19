@@ -11,6 +11,8 @@ filtered_data = {}
 
 def init():
     global interview_history, filtered_data
+    if not os.path.exists(interview_data_dir):
+        os.mkdir(interview_data_dir)
     for file in os.listdir(interview_data_dir):
         if os.path.isdir(file):
             continue
@@ -30,6 +32,9 @@ def init():
 
 def add_data_to_filter(author, role):
     global filtered_data
+    if author not in filtered_data.keys() or role not in filtered_data[author]:
+        # our filter is already mysteriously missing this author/role
+        return  # this can happen if we have history but no data, for instance
     filtered_data[author].remove(role)
     if len(filtered_data[author]) == 0:
         filtered_data.pop(author)
