@@ -187,6 +187,11 @@ async def feed_story_generator(context, *, args):
     story.feed_generator(args)
     await context.send("Mmm, tasty")
 
+@bot.command(name='nextroll', help="Shows the next OiaHT roll occurrence")
+async def get_oiaht_roll_time(context, *args):
+    time, eta = oiaht.get_next_roll_time()
+    await context.send(f"The next roll will occur in {eta} at {time}")
+
 
 print("Starting Tobor")
 bot.run(token)

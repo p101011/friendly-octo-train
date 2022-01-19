@@ -89,3 +89,12 @@ def get_rule_info():
     p_remaining = 1 - pow(1 - p, days_remaining)
     format_date = next_year.strftime("%d-%m-%y")
     return f"There are {num_rules} rules. The probability of at least one rule occuring by {format_date} is {p_remaining:.2f}"
+
+def get_next_roll_time():
+    next_roll = last_oiab_roll + datetime.timedelta(days=1)
+    eta = next_roll - datetime.datetime.now()
+    pretty_next = str(next_roll.strftime("%H:%M:%S"))
+    pretty_eta = str(eta)
+    if '.' in pretty_eta:
+        pretty_eta = pretty_eta[:pretty_eta.index('.')]
+    return pretty_next, pretty_eta
