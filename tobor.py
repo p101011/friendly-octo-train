@@ -103,6 +103,7 @@ async def user_guess_quote(context, *args):
         message = f"Incorrect"
     elif result == 1:
         message = f"Correct"
+        ooc.flush_random_quote()
     await context.send(message)
 
 @bot.command(name='answer', help="Who actually wrote it")

@@ -3,6 +3,7 @@ import random
 import os
 import util
 import datetime
+import pytz
 
 datapath = "context-data.pkl"
 csvpath = "context-data.csv"
@@ -84,6 +85,8 @@ async def get_new_messages(channel, timestamp, last_message_id):
     messages = await channel.history(limit=None, after=last_message).flatten()
     for message in messages:
         message_time = message.created_at
+        if message_time.tzinfo is None:
+            message_time = pytz.UTC.localize(message_time)
         if message_time < timestamp or invalid_message(message):
             continue
         else:

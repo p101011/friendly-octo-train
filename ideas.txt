@@ -1,0 +1,8 @@
+OOC guessing game:
+    * metrics on each player
+        * number of guesses
+        * average number of correct guesses
+        * who is most guessed?
+    * different game mode - multiple choice?
+Metrics:
+    * ooc word cloud
