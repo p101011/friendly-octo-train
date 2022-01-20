@@ -57,7 +57,20 @@ async def oiab_task(cb):
 
 def get_consequence(number):
     if number in consequences:
-        return consequences[number], True
+        return consequences[number], number
+    sorted = list(consequences.keys())
+    sorted.sort()
+    lower = -float('inf')
+    for k in sorted:
+        if number > k:
+            lower = k
+            continue
+        dist_low = number - lower
+        dist_high = k - number
+        if dist_low < dist_high:
+            return lower
+        return k
+
     return "Nothing happens... this time", False
 
 def add_rule(args):

@@ -33,10 +33,18 @@ async def on_ready():
         gen_channel = bot.get_channel(rgg_gen_channel_id)
         # oiaht_channel = bot.get_channel(junk_gen_channel_id)
         # gen_channel = bot.get_channel(junk_gen_channel_id)
-        consequence, hit = oiaht.get_consequence(result)
+        consequence, closest = oiaht.get_consequence(result)
+        hit = closest == result
         await oiaht_channel.send(f"Today's One-In-A-Hundred-Thousand roll is: *{result}*\nThe Consequence is:\n{consequence}")
         if hit:
             await gen_channel.send(f"Better buy a lottery ticket: OiaHT hit something!")
+        else:
+            closest_higher = closest > result
+            if closest_higher:
+                sign = '+'
+            else:
+                sign = '-'
+            await oiaht_channel.send(f"The nearest rule is: *{closest}* ({sign}{abs(result - closest)})")
 
 
     for guild in bot.guilds:
