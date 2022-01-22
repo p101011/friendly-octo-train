@@ -68,8 +68,8 @@ def get_consequence(number):
         dist_low = number - lower
         dist_high = k - number
         if dist_low < dist_high:
-            return lower
-        return k
+            return "Nothing happens... this time", lower
+        return "Nothing happens... this time", k
 
     return "Nothing happens... this time", False
 
