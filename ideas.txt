@@ -6,3 +6,4 @@ OOC guessing game:
     * different game mode - multiple choice?
 Metrics:
     * ooc word cloud
+    * OiaHT roll history (pictoral)

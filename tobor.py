@@ -44,7 +44,7 @@ async def on_ready():
                 sign = '+'
             else:
                 sign = '-'
-            await oiaht_channel.send(f"The nearest rule is: *{closest}* ({sign}{abs(result - closest)})")
+            await oiaht_channel.send(f"The nearest rule is: *{closest}* ({sign}{abs(result - closest)})\n\t{oiaht.get_rules()[closest]}")
 
 
     for guild in bot.guilds:
@@ -176,11 +176,7 @@ async def get_oiaht_rule(context, *args):
     except ValueError:
         await context.send(oiaht.get_rule_info())
         return
-    rules = oiaht.get_rules()
-    if number not in rules:
-        await context.send(f"There is no rule '{number}' at present")
-        return
-    await context.send(f"Rule {number}: {rules[number]}")
+    await context.send(oiaht.get_formatted_ruleinfo(number))
 
 @bot.command(name='feed', help="Tobor craves information")
 async def feed_story_generator(context, *, args):

@@ -25,7 +25,10 @@ def init(oiab_callback):
         with open(consequence_path, 'r') as fp:
             reader = csv.reader(fp)
             for row in reader:
-                consequences[int(row[0])] = row[1]
+                number = int(row[0])
+                if number > (one_in_a - 1) or number < 0:
+                    continue
+                consequences[number] = row[1]
 
     if os.path.exists(consequence_data):
         store = util.read_data(consequence_data)
@@ -111,3 +114,8 @@ def get_next_roll_time():
     if '.' in pretty_eta:
         pretty_eta = pretty_eta[:pretty_eta.index('.')]
     return pretty_next, pretty_eta
+
+def get_formatted_ruleinfo(number):
+    if number not in consequences:
+        return f"There is no rule '{number}' at present"
+    return f"Rule {number}: {consequences[number]}"
