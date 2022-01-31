@@ -152,19 +152,32 @@ async def add_oiaht_rule(context, *args):
 @bot.command(name='rulelist', help="Lists all of the active OiaHT rules")
 async def list_oiaht_rules(context, *args):
     def format_rules(rule_list):
-        output = "```"
         rule_iter = list(rule_list.keys())
         rule_iter.sort()
         max_line_width = 60
-        while len(rule_iter) > 0:
-            line = ""
-            while len(rule_iter) > 0 and len(line) + len(str(rule_iter[0])) + 2 < max_line_width:
-                line += f"{rule_iter[0]}, "
-                rule_iter = rule_iter[1:]
-            output += f"{line[:-2]}\n"
-        output = output[:-1] + "```"
-        return output
-    await context.send(format_rules(oiaht.get_rules()))
+        max_char_count = 1800
+        chunks = [[""]]
+        for rule in rule_iter:
+            str_rule = str(rule)
+
+            len_chunk = len(chunks[-1]) + sum([len(x) for x in chunks[-1]])
+            if len(str_rule) + len_chunk > max_char_count:
+                chunks[-1][-1] = chunks[-1][-1][:-2]
+                chunks.append([""])
+
+            len_line = len(chunks[-1][-1])
+            if len(str_rule) + len_line > max_line_width:
+                chunks[-1][-1] = chunks[-1][-1][:-2]
+                chunks[-1].append("")
+
+            chunks[-1][-1] += f"{str_rule}, "
+
+        chunks[-1][-1] = chunks[-1][-1][:-2]
+        chunks = ["```" + '\n'.join(x) + "```" for x in chunks]
+        return chunks
+
+    for chunk in format_rules(oiaht.get_rules()):
+        await context.send(chunk)
 
 @bot.command(name='ruleinfo', help="Get the information for a OiaHT rule by number")
 async def get_oiaht_rule(context, *args):

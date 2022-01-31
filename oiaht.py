@@ -33,6 +33,8 @@ def init(oiab_callback):
     if os.path.exists(consequence_data):
         store = util.read_data(consequence_data)
         for key in store:
+            if key > (one_in_a - 1) or key < 0:
+                continue
             consequences[key] = store[key]
 
     loop = asyncio.get_event_loop()
