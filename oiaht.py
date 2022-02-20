@@ -121,3 +121,11 @@ def get_formatted_ruleinfo(number):
     if number not in consequences:
         return f"There is no rule '{number}' at present"
     return f"Rule {number}: {consequences[number]}"
+
+def how_many_numbers_within(n=5):
+    rule_numbers = list(consequences.keys())
+    for number in consequences.keys():
+        for i in range(-n, n + 1):
+            if number + i not in rule_numbers:
+                rule_numbers.append(number + i)
+    return len(rule_numbers)

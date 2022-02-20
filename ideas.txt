@@ -7,3 +7,4 @@ OOC guessing game:
 Metrics:
     * ooc word cloud
     * OiaHT roll history (pictoral)
+    * OiaHT rule list export
