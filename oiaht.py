@@ -42,10 +42,10 @@ def init(oiab_callback):
 
 async def roll_oiab(cb):
     global last_oiab_roll
-    roll = random.randint(1, one_in_a)
-    await cb(roll)
     last_oiab_roll = datetime.datetime.now()
     oiab_metadata['last_oiab_roll'] = last_oiab_roll
+    roll = random.randint(1, one_in_a)
+    await cb(roll)
     util.save_data(metapath, oiab_metadata)
 
 async def oiab_task(cb):
@@ -54,7 +54,7 @@ async def oiab_task(cb):
     if (divmod(duration.total_seconds(), 86400)[0] > 1):
         await roll_oiab(cb)
     while True:
-        next_roll = last_oiab_roll + datetime.timedelta(days=1)
+        next_roll = last_oiab_roll + datetime.timedelta(days=1, seconds=3)
         time_to_next_roll_in_s = (next_roll - datetime.datetime.now()).total_seconds()
         await asyncio.sleep(time_to_next_roll_in_s)
         print(f'sleep time: {time_to_next_roll_in_s}')
