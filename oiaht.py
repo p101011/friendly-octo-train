@@ -42,7 +42,12 @@ def init(oiab_callback):
 
 async def roll_oiab(cb):
     global last_oiab_roll
-    last_oiab_roll = datetime.datetime.now()
+    current_time = datetime.datetime.now()
+    time_since_last_roll = current_time - last_oiab_roll
+    if time_since_last_roll < datetime.timedelta(days=1):
+        print("Uh-oh, scoob!")
+        return
+    last_oiab_roll = current_time
     oiab_metadata['last_oiab_roll'] = last_oiab_roll
     roll = random.randint(1, one_in_a)
     await cb(roll)
