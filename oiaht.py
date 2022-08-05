@@ -154,7 +154,8 @@ def get_rule_distribution_plot(arguments):
     plt.clf()
     plt.figure(figsize=(5,5))
     _, _, bars = plt.hist(consequences.keys(), bins)
-    # plt.bar_label(bars)
+    if bins < 11:
+        plt.bar_label(bars)
     plt.xlabel("Rule Number (10000's)")
     plt.xticks(np.arange(0, one_in_a, one_in_a / 10), np.arange(0, int(one_in_a / (one_in_a / 10))))
     plt.title("OiaHT Rule Distribution Histogram")
