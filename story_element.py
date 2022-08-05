@@ -1,5 +1,4 @@
 import uuid
-import spacy
 
 class State:
     def __init__(self, name, value, timestep):
@@ -15,7 +14,7 @@ class History:
         self.actions = []
         self.unique_elements = set()
         self.last_added_element = -1
-    
+
     def add_action(self, action, t):
         self.actions.append(action)
         for el in action.elements:
@@ -52,7 +51,7 @@ class History:
                 if element_parent is not None and e0.state_history["parent"][-1] != element_parent:
                     # our element has a known parent and it is different from the other's
                     return element
-                
+
                 # our two elements match in all significant fields, so element can be mapped to e0
                 return e0
 
@@ -78,7 +77,7 @@ class StoryElement:
         self.descriptors = descriptors
         self.action_history = []
         self.uuid = uuid.uuid4()
-    
+
     def __str__(self):
         if not any(self.descriptors):
             return self.name
@@ -97,7 +96,7 @@ class Action:
             self.elements += self.receivers[obj_type]
         self.t = -1
         self.uuid = uuid.uuid4()
-    
+
     # validates this action against a history
     # returns false if the action would break common rules (i.e. can't kill dead person)
     def validate(self, reject_incomplete):
@@ -296,7 +295,7 @@ class FreeAction(Action):
         receivers = self.get_action_targets()
         if isinstance(receivers, dict):
             receivers = receivers["direct"]
-        
+
         for target in receivers:
             target_movement_states = [x for x in target.state_history["location"] if x.name == 'emplace']
             last_state = target_movement_states[-1]
