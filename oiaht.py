@@ -4,6 +4,8 @@ import random
 import util
 import os
 import csv
+import numpy as np
+from matplotlib import pyplot as plt
 
 metapath = "oiab-data.pkl"
 consequence_path = "oiaht-consequences.csv"
@@ -134,3 +136,22 @@ def how_many_numbers_within(n=5):
             if number + i not in rule_numbers:
                 rule_numbers.append(number + i)
     return len(rule_numbers)
+
+def get_rule_distribution_plot(arguments):
+    output_filename = "tempplt.png"
+    def cleanup():
+        if os.path.exists(output_filename):
+            os.remove(output_filename)
+    if len(arguments) == 0:
+        bins = 10
+    else:
+        bins = int(arguments[0])
+    plt.clf()
+    plt.figure(figsize=(5,5))
+    _, _, bars = plt.hist(consequences.keys(), bins)
+    # plt.bar_label(bars)
+    plt.xlabel("Rule Number (10000's)")
+    plt.xticks(np.arange(0, one_in_a, one_in_a / 10), np.arange(0, int(one_in_a / (one_in_a / 10))))
+    plt.title("Rule Distribution Histogram")
+    plt.savefig(output_filename, dpi=200)
+    return output_filename, cleanup

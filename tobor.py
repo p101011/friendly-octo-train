@@ -4,10 +4,13 @@ import oiaht
 import interviews
 import context as ooc
 import struct
+import sys
 
+from discord import file
 from discord.ext import commands
 
-if struct.calcsize("P") * 8 == 64:
+# TODO: story relies on spacy, which is currently broken due to a CUDA version mismatch
+if struct.calcsize("P") * 8 == 64 and False:
     import story
     X64 = True
 else:
@@ -29,6 +32,8 @@ last_messaged_user = None
 @bot.event
 async def on_ready():
     async def record_oiaht_result(result):
+        if 'debug' in sys.argv:
+            return
         oiaht_channel = bot.get_channel(rgg_oiaht_channel_id)
         gen_channel = bot.get_channel(rgg_gen_channel_id)
         # oiaht_channel = bot.get_channel(junk_gen_channel_id)
@@ -93,10 +98,6 @@ async def tell_story(context, *args):
     story_chunks = story.generate_story(length, chunk_size)
     for chunk in story_chunks:
         await context.send(chunk, tts=use_tts)
-
-@bot.command(name='metrics', help="Gross")
-async def print_metrics(context, *args):
-    await context.send("I'm still sleeping (wait for it)")
 
 @bot.command(name='quote', help="Provides a random quote")
 async def select_quote(context, *args):
@@ -213,7 +214,22 @@ async def get_oiaht_roll_time(context, *args):
     time, eta = oiaht.get_next_roll_time()
     await context.send(f"The next roll will occur in {eta} at {time}")
 
+@bot.command(name='metrics', help="Display metrics relating to the OiaHT ruleset")
+async def get_oiaht_metrics(context, *args):
+    metricType, args = args[0], args[1:]
+    rule_map = {
+        "distro": oiaht.get_rule_distribution_plot
+    }
+    if (metricType in rule_map):
+        output, cleanupCB = rule_map[metricType](args)
+    else:
+        available_types = '\n'.join(rule_map.keys())
+        await context.send(f"Unrecognized metric type. Available options are:\n{available_types}")
+        return
+    await context.send(file=file.File(output))
+    cleanupCB()
 
-print("Starting Tobor")
-bot.run(token)
-print("Closing Tobor")
+if __name__ == "__main__":
+    print("Starting Tobor")
+    bot.run(token)
+    print("Closing Tobor")
