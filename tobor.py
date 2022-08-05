@@ -221,7 +221,11 @@ async def get_oiaht_metrics(context, *args):
         "distro": oiaht.get_rule_distribution_plot
     }
     if (metricType in rule_map):
-        output, cleanupCB = rule_map[metricType](args)
+        result = rule_map[metricType](args)
+        if not result:
+            await context.send(f"Make sure you enter a number for bin size")
+            return
+        output, cleanupCB = result
     else:
         available_types = '\n'.join(rule_map.keys())
         await context.send(f"Unrecognized metric type. Available options are:\n{available_types}")
