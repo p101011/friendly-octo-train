@@ -4,6 +4,7 @@ import os
 import util
 import datetime
 import pytz
+from discord import errors
 
 datapath = "context-data.pkl"
 csvpath = "context-data.csv"
@@ -81,8 +82,13 @@ async def get_new_messages(channel, timestamp, last_message_id):
     if last_message_id is None:
         last_message = None
     else:
-        last_message = await channel.fetch_message(last_message_id)
-    messages = await channel.history(limit=None, after=last_message).flatten()
+        try:
+            last_message = await channel.fetch_message(last_message_id)
+        except errors.NotFound:
+            last_message_id = None
+            last_message = None
+    after = timestamp if last_message is None else last_message
+    messages = [x async for x in channel.history(limit=None, after=after)]
     for message in messages:
         message_time = message.created_at
         if message_time.tzinfo is None:

@@ -17,7 +17,7 @@ last_oiab_roll = datetime.datetime.utcfromtimestamp(0)
 oiab_metadata = {"last_oiab_roll": None}
 consequences = {}
 
-def init(oiab_callback):
+async def init(oiab_callback, roll_override=0):
     global last_oiab_roll
     if os.path.exists(metapath):
         oiab_metadata = util.read_data(metapath)
@@ -40,9 +40,14 @@ def init(oiab_callback):
             consequences[key] = store[key]
 
     loop = asyncio.get_event_loop()
+
+    rolls = [random.randint(1, one_in_a) for _ in range(roll_override)]
+    for r in rolls:
+        await oiab_callback(r)
+
     task = loop.create_task(oiab_task(oiab_callback))
 
-async def roll_oiab(cb):
+async def roll_oiab(cb, override=False):
     global last_oiab_roll
     current_time = datetime.datetime.now()
     time_since_last_roll = current_time - last_oiab_roll
