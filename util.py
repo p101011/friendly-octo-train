@@ -10,6 +10,29 @@ def get_discord_token():
             return token_file.read()
     return None
 
+def get_guild_id(guild_name):
+    guild_map = {
+        'junkyard': 683022810649854032,
+        'rgg': 404728187591852032
+    }
+    if guild_name in guild_map:
+        return guild_map[guild_name]
+    return guild_map['junkyard']
+
+def get_channel_id(channel_name, is_testing):
+    if is_testing:
+        return 683022810654048293 # 101011's Junk Graveyard General Chat
+    channel_map = {
+        "outofcontext": 706339863850647642,
+        "oneinahundredthousand": 869745416307101712,
+        "dream-graveyard": 686986026815717429,
+        "general": 404728187591852034,
+    }
+    if channel_name in channel_map:
+        return channel_map[channel_name]
+    print(f"ERROR: Unrecognized channel '{channel_name}'")
+    return 683022810654048293 # 101011's Junk Graveyard General Chat
+
 # this saves a python struct out to a file on my computer
 def save_data(path, data):
     with open(path, 'wb+') as fp:
