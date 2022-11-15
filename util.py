@@ -33,6 +33,11 @@ def get_channel_id(channel_name, is_testing):
     print(f"ERROR: Unrecognized channel '{channel_name}'")
     return 683022810654048293 # 101011's Junk Graveyard General Chat
 
+def get_channel_id_from_mention(mention: str):
+    if not mention.startswith('<#') or not mention.endswith('>'):
+        return None
+    return int(mention.replace('<#', '').replace('>', ''))
+
 # this saves a python struct out to a file on my computer
 def save_data(path, data):
     with open(path, 'wb+') as fp:

@@ -1,5 +1,6 @@
 # https://realpython.com/how-to-make-a-discord-bot-python/#how-to-make-a-discord-bot-in-the-developer-portal
 import asyncio
+import random
 import util
 import oiaht
 import interviews
@@ -11,7 +12,7 @@ import discord
 from discord import file
 from discord import app_commands
 from discord.ext import commands
-from util import get_guild_id
+from util import get_channel_id_from_mention, get_guild_id
 
 # TODO: story relies on spacy, which is currently broken due to a CUDA version mismatch
 if struct.calcsize("P") * 8 == 64 and False:
@@ -88,7 +89,7 @@ async def on_message(message):
     await bot.process_commands(message)
 
 @bot.command(name='story', description="Weaves tales of grief and sorrow", guild=get_discord_guilds('junkyard'))
-async def tell_story(context, *args):
+async def tell_story(context: commands.Context, *args):
     if context.message.channel.id != get_channel_id('dream-graveyard'):
         return
 
@@ -126,7 +127,7 @@ async def select_quote(interaction: discord.Interaction):
     await interaction.response.send_message(ooc.select_random_quote())
 
 @bot.command(name='guess', help="Who wrote the quote")
-async def user_guess_quote(context, *args):
+async def user_guess_quote(context: commands.Context, *args):
     if len(args) == 0:
         await context.send(f"You have to guess who wrote the selected quote!")
         return
@@ -141,7 +142,7 @@ async def user_guess_quote(context, *args):
     await context.send(message)
 
 @bot.command(name='answer', help="Who actually wrote it")
-async def get_quote_author(context, *args):
+async def get_quote_author(context: commands.Context, *args):
     author = ooc.get_quote_author()
     if author is None:
         await context.send("There's no quote to answer for!")
@@ -150,7 +151,7 @@ async def get_quote_author(context, *args):
     ooc.flush_random_quote()
 
 @bot.command(name='interview', help="This will select a random job position for which someone has to interview")
-async def select_interview_position(context, *args):
+async def select_interview_position(context: commands.Context, *args):
     if len(args) > 0:
         interviewee = args[0]
     else:
@@ -161,7 +162,7 @@ async def select_interview_position(context, *args):
     await last_messaged_user.send(f"You are interviwing {interviewee} for the position of '{role}'")
 
 @bot.command(name='rule', help="Add a rule to the One-In-A-Hundred-Thousand game")
-async def add_oiaht_rule(context, *args):
+async def add_oiaht_rule(context: commands.Context, *args):
     res = oiaht.add_rule(args)
     if res == 1:
         await context.send("Rule added successfully")
@@ -173,7 +174,7 @@ async def add_oiaht_rule(context, *args):
         await context.send("Failed to add rule - make sure the format is <number> <rule>")
 
 @bot.command(name='rulelist', help="Lists all of the active OiaHT rules")
-async def list_oiaht_rules(context, *args):
+async def list_oiaht_rules(context: commands.Context, *args):
     def format_rules(rule_list):
         rule_iter = list(rule_list.keys())
         rule_iter.sort()
@@ -203,7 +204,7 @@ async def list_oiaht_rules(context, *args):
         await context.send(chunk)
 
 @bot.command(name='ruleinfo', help="Get the information for a OiaHT rule by number")
-async def get_oiaht_rule(context, *args):
+async def get_oiaht_rule(context: commands.Context, *args):
     if len(args) < 1:
         await context.send(oiaht.get_rule_info())
         return
@@ -215,7 +216,7 @@ async def get_oiaht_rule(context, *args):
     await context.send(oiaht.get_formatted_ruleinfo(number))
 
 @bot.command(name='feed', help="Tobor craves information")
-async def feed_story_generator(context, *, args):
+async def feed_story_generator(context: commands.Context, *, args):
     if not X64:
         await context.send("Tobor can't tell stories")
         return
@@ -232,12 +233,12 @@ async def feed_story_generator(context, *, args):
     await context.send("Mmm, tasty")
 
 @bot.command(name='nextroll', help="Shows the next OiaHT roll occurrence")
-async def get_oiaht_roll_time(context, *args):
+async def get_oiaht_roll_time(context: commands.Context, *args):
     time, eta = oiaht.get_next_roll_time()
     await context.send(f"The next roll will occur in {eta} at {time}")
 
 @bot.command(name='metrics', help="Display metrics relating to the OiaHT ruleset")
-async def get_oiaht_metrics(context, *args):
+async def get_oiaht_metrics(context: commands.Context, *args):
     metricType, args = args[0], args[1:]
     rule_map = {
         "distro": oiaht.get_rule_distribution_plot
@@ -254,6 +255,47 @@ async def get_oiaht_metrics(context, *args):
         return
     await context.send(file=file.File(output))
     cleanupCB()
+
+@bot.command(name='teams', help="Distribute the players in your voice chat into *n* evenly-split random teams")
+async def build_random_teams(context: commands.Context, *args):
+    if context.author.voice is None:
+        await context.send(f"For our next team-building exercise, let's all make fun of {context.author.display_name} for trying to use this command outside of a voice channel!")
+        return
+
+    team_count = 2
+    channels = None
+
+    if len(args) > 0:
+        try:
+            team_count = int(args[0])
+            if team_count > 10:
+                await context.send(f"You don't need more than 10 teams!")
+                return
+        except:
+            channels = [bot.get_channel(get_channel_id_from_mention(arg)) for arg in args]
+            team_count = len(channels) + 1
+
+    channel = context.author.voice.channel
+    players = channel.members
+    random.shuffle(players)
+    teams = [players[i::team_count] for i in range(team_count)]
+
+    if channels is None:
+        team_count = '\n'.join([] + [', '.join([player.display_name for player in team]) for team in teams])
+        await context.send(team_count.strip())
+        return
+
+    exception = False
+    for i, team in enumerate(teams[1:]):
+        for player in team:
+            try:
+                await player.move_to(channels[i], reason=f"Building teams")
+            except:
+                exception = True
+
+    if exception:
+        team_count = '\n'.join([', '.join([player.display_name for player in team]) for team in teams])
+        await context.send(team_count.strip())
 
 if __name__ == "__main__":
     print("Starting Tobor")
