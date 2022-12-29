@@ -117,11 +117,6 @@ async def tell_story(context: commands.Context, *args):
     for chunk in story_chunks:
         await context.send(chunk, tts=use_tts)
 
-@bot.command(name = "commandname", description = "My first application Command")
-#Add the guild ids in which the slash command will appear. If it should be in all, remove the argument, but note that it will take some time (up to an hour) to register the command if it's for all guilds.
-async def first_command(interaction):
-    await interaction.response.send_message("Hello!")
-
 @bot.command(name='quote', description="Provides a random quote")
 async def select_quote(interaction: discord.Interaction):
     await interaction.response.send_message(ooc.select_random_quote())
@@ -239,10 +234,13 @@ async def get_oiaht_roll_time(context: commands.Context, *args):
 
 @bot.command(name='metrics', help="Display metrics relating to the OiaHT ruleset")
 async def get_oiaht_metrics(context: commands.Context, *args):
-    metricType, args = args[0], args[1:]
     rule_map = {
         "distro": oiaht.get_rule_distribution_plot
     }
+    if (len(args) == 0):
+        await context.send(f"You must specify a metric type. Available options are:\n{', '.join(rule_map.keys())}")
+        return
+    metricType, args = args[0], args[1:]
     if (metricType in rule_map):
         result = rule_map[metricType](args)
         if not result:
@@ -296,6 +294,13 @@ async def build_random_teams(context: commands.Context, *args):
     if exception:
         team_count = '\n'.join([', '.join([player.display_name for player in team]) for team in teams])
         await context.send(team_count.strip())
+
+@bot.command(name='dump', help="Export the out of context data as a CSV file")
+async def build_random_teams(context: commands.Context, *args):
+    filepath = ooc.dump_data()
+    with open(filepath, mode='rb') as fp:
+        file = discord.File(fp)
+        await context.send('Out of Context data', file=file)
 
 if __name__ == "__main__":
     print("Starting Tobor")

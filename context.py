@@ -131,3 +131,7 @@ def get_quote_author():
 def flush_random_quote():
     global last_random_quote
     last_random_quote = None, None
+
+def dump_data():
+    util.write_data_csv(csvpath, data)
+    return csvpath
