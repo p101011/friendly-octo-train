@@ -5,6 +5,7 @@ import util
 import datetime
 import pytz
 from discord import errors
+from discord.utils import DISCORD_EPOCH
 
 datapath = "context-data.pkl"
 csvpath = "context-data.csv"
@@ -27,7 +28,14 @@ def add_message_to_dict(d, message):
     if author not in d["quotes"]:
         d["quotes"][author] = []
     quote = {"body": body, "reporter": reporter, "time": message.created_at}
-    d["quotes"][author].append(quote)
+    new_quote = True
+    for old_quote in d["quotes"][author]:
+        if old_quote['body'] == quote["body"]:
+            new_quote = False
+            break
+    if new_quote:
+        d["quotes"][author].append(quote)
+        d["total_count"] += 1
     return d
 
 def process_quote(message):
@@ -59,23 +67,16 @@ async def init(ooc_channel):
     last_updated = data["timestamp"]
     print("Last message in history is from {}".format(last_updated))
     last_message_id = data.get("last_message_id", None)
-    new_data = await get_new_messages(ooc_channel, last_updated, last_message_id)
-    data["total_count"] += new_data["count"]
-    print(f"Data fetch complete: there are {new_data['count']} new messages and {data['total_count']} total messages")
-    for author in new_data["quotes"].keys():
-        if author not in data["quotes"]:
-            data["quotes"][author] = []
-        data["quotes"][author] += new_data["quotes"][author]
-    data["timestamp"] = datetime.datetime.now(datetime.timezone.utc)
-    data["last_message_id"] = new_data["last_message_id"]
+    new_count = await get_new_messages(ooc_channel, last_updated, last_message_id, data)
+    print(f"Data fetch complete: there are {new_count} new messages and {data['total_count']} total messages")
     data = util.sanitize_data(data)
     util.save_data(datapath, data)
     util.write_data_csv(csvpath, data)
     print(f"Data load process complete")
 
-async def get_new_messages(channel, timestamp, last_message_id):
+async def get_new_messages(channel, timestamp, last_message_id, old_data):
     if timestamp is None:
-        timestamp = datetime.datetime.utcfromtimestamp(0)
+        timestamp = datetime.datetime.fromtimestamp(DISCORD_EPOCH / 1000 + 100000, datetime.timezone.utc)
     if not channel:
         return {"quotes": {}, "count": 0}
     valid = []
@@ -97,15 +98,15 @@ async def get_new_messages(channel, timestamp, last_message_id):
             continue
         else:
             valid.append(message)
-    output = {"quotes": {}, "count": len(valid)}
+    new_count = 0
     for message in valid:
-        add_message_to_dict(output, message)
-    if len(valid) > 0:
+        if add_message_to_dict(old_data, message):
+            new_count += 1
+    if new_count > 0:
         last_message = valid[0]
-        output["last_message_id"] = last_message.id
-    else:
-        output["last_message_id"] = last_message_id
-    return output
+        old_data["last_message_id"] = last_message.id
+    old_data["timestamp"] = datetime.datetime.now(datetime.timezone.utc)
+    return new_count
 
 def select_random_quote():
     global last_random_quote

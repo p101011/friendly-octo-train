@@ -20,14 +20,19 @@ def get_guild_id(guild_name):
     return guild_map['junkyard']
 
 def get_channel_id(channel_name, is_testing):
-    if is_testing:
-        return 683022810654048293 # 101011's Junk Graveyard General Chat
-    channel_map = {
+    prod_channel_map = {
         "outofcontext": 706339863850647642,
         "oneinahundredthousand": 869745416307101712,
         "dream-graveyard": 686986026815717429,
         "general": 404728187591852034,
     }
+    testing_channel_map = {
+        "outofcontext": 706339863850647642,
+        "oneinahundredthousand": 683022810654048293,
+        "dream-graveyard": 683022810654048293,
+        "general": 683022810654048293,
+    }
+    channel_map = testing_channel_map if is_testing else prod_channel_map
     if channel_name in channel_map:
         return channel_map[channel_name]
     print(f"ERROR: Unrecognized channel '{channel_name}'")
