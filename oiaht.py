@@ -2,6 +2,7 @@ import asyncio
 import datetime
 import random
 import util
+import time
 import os
 import csv
 import numpy as np
@@ -44,6 +45,7 @@ async def init(oiab_callback, roll_override=0):
     rolls = [random.randint(1, one_in_a) for _ in range(roll_override)]
     for r in rolls:
         await oiab_callback(r)
+        time.sleep(110)
 
     task = loop.create_task(oiab_task(oiab_callback))
 
